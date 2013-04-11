@@ -405,26 +405,14 @@ Sub ExportCode()
                 FileName = codeFolder & comp.Name & ".bas"
                 DeleteFile FileName
                 comp.Export FileName
-                FillInfo FunctionName:="ExportCode", _
-                         Parameters:=FileName, _
-                         FileDate:=Format(Date, "m/dd/yy"), _
-                         Result:="Complete"
             Case 2
                 FileName = codeFolder & comp.Name & ".cls"
                 DeleteFile FileName
                 comp.Export FileName
-                FillInfo FunctionName:="ExportCode", _
-                         Parameters:=FileName, _
-                         FileDate:=Format(Date, "m/dd/yy"), _
-                         Result:="Complete"
             Case 3
                 FileName = codeFolder & comp.Name & ".frm"
                 DeleteFile FileName
                 comp.Export FileName
-                FillInfo FunctionName:="ExportCode", _
-                         Parameters:=FileName, _
-                         FileDate:=Format(Date, "m/dd/yy"), _
-                         Result:="Complete"
         End Select
     Next
 End Sub
@@ -475,18 +463,22 @@ End Sub
 ' Date : 3/19/2013
 ' Desc : Deletes a file
 '---------------------------------------------------------------------------------------
-Sub DeleteFile(FileName As String)
+Sub DeleteFile(FileName As String, Optional LogEntry As Boolean = False)
     On Error GoTo File_Error
     Kill FileName
 
-    FillInfo FunctionName:="DeleteFile", _
-             Parameters:=FileName, _
-             Result:="Complete"
+    If LogEntry = True Then
+        FillInfo FunctionName:="DeleteFile", _
+                 Parameters:=FileName, _
+                 Result:="Complete"
+    End If
     Exit Sub
 
 File_Error:
-    FillInfo FunctionName:="DeleteFile", _
-             Result:="Err #: " & Err.Number
+    If LogEntry = True Then
+        FillInfo FunctionName:="DeleteFile", _
+                 Result:="Err #: " & Err.Number
+    End If
 End Sub
 
 '---------------------------------------------------------------------------------------
