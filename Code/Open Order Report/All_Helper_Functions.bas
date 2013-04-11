@@ -6,6 +6,12 @@ Option Explicit
 'Example: "Sleep 1500" will pause for 1.5 seconds
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
+'Used when importing 117 to determine the type of report to pull
+Enum ReportType
+    DS
+    BO
+End Enum
+
 '---------------------------------------------------------------------------------------
 ' Proc  : Function FileExists
 ' Date  : 10/10/2012
@@ -104,7 +110,7 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
 
         'Setup email
         .Subject = Subject
-        .To = SendTo
+        .to = SendTo
         .CC = CC
         .BCC = BCC
         .HTMLbody = Body
@@ -192,7 +198,7 @@ Function ImportGaps() As Boolean
                      Parameters:="", _
                      ExecutionTime:=Timer - StartTime, _
                      Result:="Failed - User Aborted"
-            ERR.Raise 18
+            Err.Raise 18
         End If
     Else
         MsgBox Prompt:="Gaps could not be found.", Title:="Gaps not found"
@@ -201,7 +207,7 @@ Function ImportGaps() As Boolean
                  Parameters:="", _
                  ExecutionTime:=Timer - StartTime, _
                  Result:="Failed - Gaps not found"
-        ERR.Raise 53
+        Err.Raise 53
     End If
 
     Application.DisplayAlerts = True
@@ -324,7 +330,7 @@ Sub UserImportFile(DestRange As Range, DelFile As Boolean)
                  ExecutionTime:=Timer - StartTime, _
                  Result:="Failed - User Aborted"
         Sheets("Info").Select
-        ERR.Raise 18
+        Err.Raise 18
     End If
 
 End Sub
@@ -334,7 +340,7 @@ End Sub
 ' Date : 1/29/2013
 ' Desc : Used to add a line to the Info sheet
 '---------------------------------------------------------------------------------------
-Sub FillInfo(FunctionName As String, Result As String, Optional ExecutionTime As String = "", Optional Parameters As String = "", Optional FileDate As String = "")
+Sub FillInfo(Optional FunctionName As String = "", Optional Result As String = "", Optional ExecutionTime As String = "", Optional Parameters As String = "", Optional FileDate As String = "")
     Dim Info As Worksheet           'Info worksheet if it exists, else this = nothing
     Dim LastSheet As Worksheet      'The previously selected worksheet
     Dim LastWorkbook As Workbook    'The previously activated workbook
@@ -399,18 +405,28 @@ Sub ExportCode()
                 FileName = codeFolder & comp.Name & ".bas"
                 DeleteFile FileName
                 comp.Export FileName
+                FillInfo FunctionName:="ExportCode", _
+                         Parameters:=FileName, _
+                         FileDate:=Format(Date, "m/dd/yy"), _
+                         Result:="Complete"
             Case 2
                 FileName = codeFolder & comp.Name & ".cls"
                 DeleteFile FileName
                 comp.Export FileName
+                FillInfo FunctionName:="ExportCode", _
+                         Parameters:=FileName, _
+                         FileDate:=Format(Date, "m/dd/yy"), _
+                         Result:="Complete"
             Case 3
                 FileName = codeFolder & comp.Name & ".frm"
                 DeleteFile FileName
                 comp.Export FileName
+                FillInfo FunctionName:="ExportCode", _
+                         Parameters:=FileName, _
+                         FileDate:=Format(Date, "m/dd/yy"), _
+                         Result:="Complete"
         End Select
     Next
-    
-    ThisWorkbook.Saved = True
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -451,7 +467,7 @@ Sub ImportModule()
             End Select
         End If
     Next
-    
+
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -470,10 +486,7 @@ Sub DeleteFile(FileName As String)
 
 File_Error:
     FillInfo FunctionName:="DeleteFile", _
-             Result:="Err #: " & ERR.Number
-    FillInfo FunctionName:="", _
-             Result:="Err Description" & ERR.Description
-
+             Result:="Err #: " & Err.Number
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -580,4 +593,137 @@ SHEET_EXISTS:
     ThisWorkbook.Sheets.Add After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count), Count:=1
     ActiveSheet.Name = "VBA References"
     Resume Next
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : Import117byISN
+' Date : 4/10/2013
+' Desc : Imports the most recent 117 report for the specified sales number
+'---------------------------------------------------------------------------------------
+Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal ISN As String = "", Optional Cancel As Boolean = False)
+    Dim sPath As String
+    Dim FileName As String
+
+    If ISN = "" And Cancel = False Then
+        ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
+    End If
+
+    If ISN <> "" Then
+        Select Case RepType
+            Case ReportType.DS:
+                FileName = "3615 " & Format(Date, "m-dd-yy") & " DSORDERS.xlsx"
+
+            Case ReportType.BO:
+                FileName = "3615 " & Format(Date, "m-dd-yy") & " BACKORDERS.xlsx"
+        End Select
+
+        sPath = "\\br3615gaps\gaps\3615 117 Report\ByInsideSalesNumber\" & ISN & "\" & FileName
+
+        If FileExists(sPath) Then
+            Workbooks.Open sPath
+            ActiveSheet.UsedRange.Copy Destination:=Destination
+            Application.DisplayAlerts = False
+            ActiveWorkbook.Close
+            Application.DisplayAlerts = True
+
+            FillInfo FunctionName:="Import117byISN", _
+                     Parameters:="Sales #: " & ISN, _
+                     Result:="Complete"
+            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
+            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
+        Else
+            FillInfo FunctionName:="Import117byISN", _
+                     Parameters:="Sales #: " & ISN, _
+                     Result:="Failed - File not found"
+            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
+            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
+            MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
+            Err.Raise 53
+        End If
+    Else
+        FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
+        Err.Raise 18
+    End If
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : Import473
+' Date : 4/11/2013
+' Desc : Imports a 473 report from the current day
+'---------------------------------------------------------------------------------------
+Sub Import473(Destination As Range)
+    Dim sPath As String
+    Dim FileName As String
+    Dim AlertStatus As Boolean
+
+    FileName = "473 " & Format(Date, "m-dd-yy") & ".xlsx"
+    sPath = "\\br3615gaps\gaps\473 Download\" & FileName
+    AlertStatus = Application.DisplayAlerts
+
+    If FileExists(sPath) Then
+        Workbooks.Open sPath
+        ActiveSheet.UsedRange.Copy Destination:=Destination
+
+        Application.DisplayAlerts = False
+        ActiveWorkbook.Close
+        Application.DisplayAlerts = AlertStatus
+
+        FillInfo FunctionName:="Import473", _
+                 Parameters:=Destination.Address(False, False), _
+                 Result:="Complete"
+    Else
+        FillInfo FunctionName:="Import473", _
+                 Parameters:="Destination: " & Destination.Address(False, False), _
+                 Result:="Failed - File not found"
+        MsgBox Prompt:="473 report not found."
+        Err.Raise 18
+    End If
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : ReportTypeText
+' Date : 4/10/2013
+' Desc : Returns the report type as a string
+'---------------------------------------------------------------------------------------
+Function ReportTypeText(RepType As ReportType) As String
+    Select Case RepType
+        Case ReportType.BO:
+            ReportTypeText = "BO"
+        Case ReportType.DS:
+            ReportTypeText = "DS"
+    End Select
+End Function
+
+'---------------------------------------------------------------------------------------
+' Proc : DeleteColumn
+' Date : 4/11/2013
+' Desc : Removes a column based on text in the column header
+'---------------------------------------------------------------------------------------
+Sub DeleteColumn(HeaderText As String)
+    Dim i As Integer
+
+    For i = ActiveSheet.UsedRange.Columns.Count To 1 Step -1
+        If Trim(Cells(1, i).Value) = HeaderText Then
+            Columns(i).Delete
+            Exit For
+        End If
+    Next
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : FindColumn
+' Date : 4/11/2013
+' Desc : Returns the column number if a match is found
+'---------------------------------------------------------------------------------------
+Sub FindColumn(HeaderText As String)
+    Dim i As Integer: i = 0
+
+    For i = 1 To ActiveSheet.UsedRange.Columns.Count
+        If Trim(Cells(1, i).Value) = HeaderText Then
+            FindColumn = i
+            Exit For
+        End If
+    Next
 End Sub
