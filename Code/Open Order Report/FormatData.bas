@@ -71,7 +71,7 @@ Sub Format117(SheetName As String)
 
     iCol = ActiveSheet.UsedRange.Columns.Count + 1
     Cells(1, iCol).Value = "Email"
-    Cells(2, iCol).Formula = "=IFERROR(VLOOKUP([@[SUPPLIER NUM]],Contacts!A:B,2,FALSE),"""")"
+    Cells(2, iCol).Formula = "=IFERROR(VLOOKUP(TRIM([@[SUPPLIER NUM]]),Contacts!A:B,2,FALSE),"""")"
     Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
     iCol = ActiveSheet.UsedRange.Columns.Count + 1
