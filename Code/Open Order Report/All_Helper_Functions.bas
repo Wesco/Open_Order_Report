@@ -717,7 +717,7 @@ End Sub
 ' Date : 4/11/2013
 ' Desc : Returns the column number if a match is found
 '---------------------------------------------------------------------------------------
-Sub FindColumn(HeaderText As String)
+Function FindColumn(HeaderText As String)
     Dim i As Integer: i = 0
 
     For i = 1 To ActiveSheet.UsedRange.Columns.Count
@@ -726,4 +726,4 @@ Sub FindColumn(HeaderText As String)
             Exit For
         End If
     Next
-End Sub
+End Function
