@@ -3,13 +3,15 @@ Option Explicit
 
 Sub Format117(SheetName As String)
     Dim PrevSheet As Worksheet
-    
+    Dim iCol As Integer
+    Dim iRows As Long
+
     Set PrevSheet = ActiveSheet
     Sheets(SheetName).Select
-    
+
     Rows(ActiveSheet.UsedRange.Rows.Count).Delete
     Rows(1).Delete
-    
+
     DeleteColumn "QUOTED TO"
     DeleteColumn "EXT MARGIN $"
     DeleteColumn "MARGIN $"
@@ -55,11 +57,48 @@ Sub Format117(SheetName As String)
     DeleteColumn "ERROR"
     DeleteColumn "WAREHOUSE"
     DeleteColumn "STATUS"
+
+    iCol = FindColumn("SUPPLIER NUM")
+    iRows = ActiveSheet.UsedRange.Rows.Count
+    Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+    ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
+
+    iCol = ActiveSheet.UsedRange.Columns.Count + 1
+    Cells(1, iCol).Value = "UID"
+    Cells(2, iCol).Formula = "=[@[ORDER NO]]&[@[LINE NO]]"
+    Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+    iCol = ActiveSheet.UsedRange.Columns.Count + 1
+    Cells(1, iCol).Value = "Email"
+    Cells(2, iCol).Formula = "=IFERROR(VLOOKUP([@[SUPPLIER NUM]],Contacts!A:B,2,FALSE),"""")"
+    Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+    iCol = ActiveSheet.UsedRange.Columns.Count + 1
+    Cells(1, iCol).Value = "Notes"
+    Cells(2, iCol).Formula = _
+    "=IFERROR(IF(VLOOKUP([@UID],'Previous 117 BO'!R:T,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous 117 BO'!R:T,3,FALSE)),"""")"
+    Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
     
+    ActiveSheet.UsedRange.Columns.AutoFit
     PrevSheet.Select
 End Sub
 
-Sub Format473()
-    Rows(1).Delete
-End Sub
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
