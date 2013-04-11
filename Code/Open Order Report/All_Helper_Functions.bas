@@ -110,7 +110,7 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
 
         'Setup email
         .Subject = Subject
-        .to = SendTo
+        .To = SendTo
         .CC = CC
         .BCC = BCC
         .HTMLbody = Body
@@ -717,7 +717,7 @@ End Sub
 ' Date : 4/11/2013
 ' Desc : Returns the column number if a match is found
 '---------------------------------------------------------------------------------------
-Function FindColumn(HeaderText As String)
+Function FindColumn(HeaderText As String) As Integer
     Dim i As Integer: i = 0
 
     For i = 1 To ActiveSheet.UsedRange.Columns.Count

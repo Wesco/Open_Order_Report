@@ -43,6 +43,9 @@ Sub ImportContacts()
     Application.DisplayAlerts = False
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevStatus
+    
+    FillInfo FunctionName:="ImportContacts", _
+             Result:="Complete"
 End Sub
 
 
