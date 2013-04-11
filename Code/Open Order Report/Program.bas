@@ -4,18 +4,22 @@ Option Explicit
 Sub Main()
     Dim ISN As String
     Dim Cancel As Boolean
-
+    Application.ScreenUpdating = False
     'Import 117 Report
     On Error GoTo ImportErr
     ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
     If ISN = "" Then Cancel = True
+    
     Import117byISN ReportType.BO, Sheets("117 BO").Range("A1"), ISN, Cancel
     Import117byISN ReportType.DS, Sheets("117 DS").Range("A1"), ISN, Cancel
     On Error GoTo 0
     
+    ImportContacts
+    ImportOOR ISN
+    
     Format117 "117 DS"
     Format117 "117 BO"
-    
+    Application.ScreenUpdating = True
 
 ImportErr:
     Exit Sub
