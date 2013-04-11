@@ -9,20 +9,54 @@ Sub Main()
     On Error GoTo ImportErr
     ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
     If ISN = "" Then Cancel = True
-    
+
     Import117byISN ReportType.BO, Sheets("117 BO").Range("A1"), ISN, Cancel
     Import117byISN ReportType.DS, Sheets("117 DS").Range("A1"), ISN, Cancel
     On Error GoTo 0
-    
-    ImportContacts
+
+    ImportSupplierContacts
+    ImportSalesContacts
     ImportOOR ISN
-    
+
     Format117 "117 DS"
     Format117 "117 BO"
     Application.ScreenUpdating = True
 
 ImportErr:
     Exit Sub
+End Sub
+
+Sub SendMail()
+    Dim ISN As String
+    Dim EmailAddress As String
+    Dim FileName As String
+    Dim i As Long
+
+    Sheets("117 BO").Select
+    ISN = Cells(2, FindColumn("IN")).Value
+    FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
+
+    If ISN = "" Then
+        Sheets("117 DS").Select
+        ISN = Cells(2, FindColumn("IN")).Value
+    End If
+
+    Sheets("Sales Contacts").Select
+    For i = 2 To ActiveSheet.UsedRange.Rows.Count
+        If Cells(i, 1).Value = ISN Then
+            EmailAddress = Cells(i, 2).Value
+            Exit For
+        End If
+    Next
+
+    If EmailAddress = "" Then
+        MsgBox Prompt:="Email for sales number " & ISN & " could not be found."
+    Else
+        Email SendTo:=EmailAddress, _
+              Subject:="Open Order Report", _
+              Body:="Please click the link to view the status of your open POs" & "<br><br>" & _
+                    """\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName & """"
+    End If
 End Sub
 
 Sub Clean()

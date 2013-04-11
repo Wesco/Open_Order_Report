@@ -7,7 +7,7 @@ Sub ImportOOR(ISN As String)
     Dim i As Integer
 
     PrevDispAlert = Application.DisplayAlerts
-    
+
     For i = 1 To 10
         sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & Format(Date - i, "m-dd-yy") & " OOR.xlsx"
 
@@ -26,7 +26,7 @@ Sub ImportOOR(ISN As String)
             ActiveSheet.ShowAllData
             On Error GoTo 0
             ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 DS").Range("A1")
-        
+
             Application.DisplayAlerts = False
             ActiveWorkbook.Close
             Application.DisplayAlerts = PrevDispAlert
@@ -35,25 +35,41 @@ Sub ImportOOR(ISN As String)
     Next
 End Sub
 
-Sub ImportContacts()
+Sub ImportSupplierContacts()
     Dim sPath As String
     Dim PrevStatus As Boolean
 
-    sPath = "\\br3615gaps\gaps\Supplier Contacts\Supplier Contact Master.xlsx"
+    sPath = "\\br3615gaps\gaps\Contacts\Supplier Contact Master.xlsx"
 
     Workbooks.Open sPath
-    ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Contacts").Range("A1")
+    ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Supplier Contacts").Range("A1")
 
     PrevStatus = Application.DisplayAlerts
     Application.DisplayAlerts = False
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevStatus
 
-    FillInfo FunctionName:="ImportContacts", _
+    FillInfo FunctionName:="ImportSupplierContacts", _
              Result:="Complete"
 End Sub
 
+Sub ImportSalesContacts()
+    Dim sPath As String
+    Dim PrevStatus As Boolean
 
+    sPath = "\\br3615gaps\gaps\Contacts\Sales #s.xlsx"
+
+    Workbooks.Open sPath
+    ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Sales Contacts").Range("A1")
+
+    PrevStatus = Application.DisplayAlerts
+    Application.DisplayAlerts = False
+    ActiveWorkbook.Close
+    Application.DisplayAlerts = PrevStatus
+
+    FillInfo FunctionName:="ImportSalesContacts", _
+             Result:="Complete"
+End Sub
 
 
 
