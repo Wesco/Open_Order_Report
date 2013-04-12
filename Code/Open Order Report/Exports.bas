@@ -21,6 +21,7 @@ Sub Export117()
     End If
     
     Sheets("117 DS").Select
+    iCol = FindColumn("IN")
     If iCol <> 0 Then
         ISN = Sheets("117 DS").Cells(2, FindColumn("IN")).Value
     End If
