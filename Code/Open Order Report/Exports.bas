@@ -9,7 +9,7 @@ Sub Export117()
     Dim PrevDispAlert As Boolean
     Dim PrevSheet As Worksheet
     
-    PrevSheet = ActiveSheet
+    Set PrevSheet = ActiveSheet
     Sheets("117 BO").Select
 
     PrevDispAlert = Application.DisplayAlerts
