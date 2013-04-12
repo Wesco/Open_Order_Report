@@ -12,7 +12,7 @@ Sub Export117()
 
     Set PrevSheet = ActiveSheet
 
-    Sheets("117 DS").Select
+    Sheets("117 BO").Select
     PrevDispAlert = Application.DisplayAlerts
 
     iCol = FindColumn("IN")
@@ -20,7 +20,7 @@ Sub Export117()
         ISN = Sheets("117 BO").Cells(2, FindColumn("IN")).Value
     End If
     
-    Sheets("117 BO").Select
+    Sheets("117 DS").Select
     If iCol <> 0 Then
         ISN = Sheets("117 DS").Cells(2, FindColumn("IN")).Value
     End If
