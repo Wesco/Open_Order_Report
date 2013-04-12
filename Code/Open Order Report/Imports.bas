@@ -8,7 +8,7 @@ Sub ImportOOR(ISN As String)
 
     PrevDispAlert = Application.DisplayAlerts
 
-    For i = 1 To 10
+    For i = 0 To 10
         sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & Format(Date - i, "m-dd-yy") & " OOR.xlsx"
 
         If FileExists(sPath) Then

@@ -77,9 +77,9 @@ Sub Format117(SheetName As String)
     iCol = ActiveSheet.UsedRange.Columns.Count + 1
     Cells(1, iCol).Value = "Notes"
     Cells(2, iCol).Formula = _
-    "=IFERROR(IF(VLOOKUP([@UID],'Previous 117 BO'!R:T,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous 117 BO'!R:T,3,FALSE)),"""")"
+    "=IFERROR(IF(VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)),"""")"
     Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
-    
+
     ActiveSheet.UsedRange.Columns.AutoFit
     PrevSheet.Select
 End Sub
