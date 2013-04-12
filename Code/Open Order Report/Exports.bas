@@ -7,7 +7,9 @@ Sub Export117()
     Dim FileName As String
     Dim ISN As String
     Dim PrevDispAlert As Boolean
-
+    Dim PrevSheet As Worksheet
+    
+    PrevSheet = ActiveSheet
     Sheets("117 BO").Select
 
     PrevDispAlert = Application.DisplayAlerts
@@ -29,6 +31,8 @@ Sub Export117()
     Application.DisplayAlerts = False
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevDispAlert
+    
+    PrevSheet.Select
     Exit Sub
 
 SAVE_ERR:

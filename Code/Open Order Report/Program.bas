@@ -4,6 +4,8 @@ Option Explicit
 Sub Main()
     Dim ISN As String
     Dim Cancel As Boolean
+    Dim ImportCheck As String
+
     Application.ScreenUpdating = False
     'Import 117 Report
     On Error GoTo ImportErr
@@ -14,13 +16,23 @@ Sub Main()
     Import117byISN ReportType.DS, Sheets("117 DS").Range("A1"), ISN, Cancel
     On Error GoTo 0
 
-    ImportSupplierContacts
-    ImportSalesContacts
-    ImportOOR ISN
+    ImportCheck = Sheets("117 BO").Range("A1") & Sheets("117 DS").Range("A1")
 
-    Format117 "117 DS"
-    Format117 "117 BO"
-    Sheets("117 BO").Select
+    If ImportCheck <> "" Then
+        ImportSupplierContacts
+        ImportSalesContacts
+        ImportOOR ISN
+
+        Format117 "117 DS"
+        Format117 "117 BO"
+        
+        If Sheets("117 BO").Range("A1").Value <> "" Then
+            Sheets("117 BO").Select
+        Else
+            Sheets("117 DS").Select
+        End If
+    End If
+
     Application.ScreenUpdating = True
 
 ImportErr:

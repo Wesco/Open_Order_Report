@@ -609,6 +609,11 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
 
     If ISN = "" And Cancel = False Then
         ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
+    Else
+        If ISN = "" Then
+            FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
+            Err.Raise 53
+        End If
     End If
 
     If ISN <> "" Then
@@ -641,10 +646,9 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
             FillInfo Parameters:="Destination: " & Destination.Address(False, False)
             MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
-            Err.Raise 53
         End If
     Else
-        FillInfo "Import117byISN", "Failed - User Aborted", Parameters:="ReportType: " & ReportTypeText(RepType)
+        FillInfo "Import117byISN", "Failed - Missing ISN", Parameters:="ReportType: " & ReportTypeText(RepType)
         Err.Raise 18
     End If
 
