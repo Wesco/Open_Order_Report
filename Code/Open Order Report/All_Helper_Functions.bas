@@ -726,7 +726,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 Function FindColumn(HeaderText As String) As Integer
     Dim i As Integer: i = 0
-
+    
+    FindColumn = i
+    
     For i = 1 To ActiveSheet.UsedRange.Columns.Count
         If Trim(Cells(1, i).Value) = HeaderText Then
             FindColumn = i
