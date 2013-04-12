@@ -20,6 +20,7 @@ Sub Main()
 
     Format117 "117 DS"
     Format117 "117 BO"
+    Sheets("117 BO").Select
     Application.ScreenUpdating = True
 
 ImportErr:
