@@ -96,14 +96,14 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
                 For Each s In Attachment
                     If s <> Empty Then
                         If FileExists(s) = True Then
-                            .attachments.Add s
+                            Mail_Single.attachments.Add s
                         End If
                     End If
                 Next
             Case "String"
                 If Attachment <> Empty Then
                     If FileExists(Attachment) = True Then
-                        .attachments.Add Attachment
+                        Mail_Single.attachments.Add Attachment
                     End If
                 End If
         End Select
@@ -114,10 +114,21 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
         .CC = CC
         .BCC = BCC
         .HTMLbody = Body
+        On Error GoTo SEND_FAILED
         .Send
+        On Error GoTo 0
     End With
+
     'Give the email time to send
     Sleep 1500
+    Exit Sub
+
+SEND_FAILED:
+    With Mail_Single
+        MsgBox "Mail to '" & .To & "' could not be sent."
+        .Delete
+    End With
+    Resume Next
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -719,3 +730,7 @@ Function FindColumn(HeaderText As String) As Integer
         End If
     Next
 End Function
+
+
+
+
