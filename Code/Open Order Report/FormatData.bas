@@ -61,6 +61,7 @@ Sub Format117(SheetName As String)
 
         iCol = FindColumn("SUPPLIER NUM")
         iRows = ActiveSheet.UsedRange.Rows.Count
+        Range(Cells(2, iCol), Cells(iRows, iCol)).NumberFormat = "@"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
         ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
@@ -86,16 +87,43 @@ Sub Format117(SheetName As String)
     PrevSheet.Select
 End Sub
 
+Sub InventoryReconciliation()
+    Dim TotalRows As Long
+    Dim RowOffset As Long
 
+    Sheets("117 BO").Select
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+    Columns("N:N").Insert
+    [N1].Value = "Total Ship Qty"
+    [N2].Formula = "=[ORDER QTY]-[BO QTY]"
+    Range(Cells(2, 17), Cells(TotalRows, 14)).Value = Range(Cells(2, 17), Cells(TotalRows, 14)).Value
+    ActiveSheet.ListObjects("Table1").Range.AutoFilter Field:=14, Criteria1:="<>0"
+    ActiveSheet.UsedRange.Copy Destination:=Sheets("Inventory Reconciliation").Cells(1, 1)
+    RowOffset = Sheets("Inventory Reconciliation").UsedRange.Rows.Count
+    ActiveSheet.AutoFilter.ShowAllData
+    Columns("N:N").Delete
 
+    Sheets("117 DS").Select
+    TotalRows = ActiveSheet.UsedRange.Rows.Count
+    Columns("N:N").Insert
+    [N1].Value = "Total Ship Qty"
+    [N2].Formula = "=[@[ORDER QTY]]-([@[QTY TO SHIP]]+[@[QTY SHIPPED]])"
+    Range(Cells(2, 17), Cells(TotalRows, 14)).Value = Range(Cells(2, 17), Cells(TotalRows, 14)).Value
+    ActiveSheet.ListObjects("Table1").Range.AutoFilter Field:=14, Criteria1:="<>0"
+    ActiveSheet.UsedRange.Copy Destination:=Sheets("Inventory Reconciliation").Cells(RowOffset + 1, 1)
+    Sheets("Inventory Reconciliation").Rows(RowOffset + 1).Delete
+    ActiveSheet.AutoFilter.ShowAllData
+    Columns("N:N").Delete
 
-
-
-
-
-
-
-
+    Sheets("Inventory Reconciliation").Select
+    Columns("N:N").Delete
+    ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
+    Cells(2, FindColumn("Notes")).Formula = _
+    "=IFERROR(IF(VLOOKUP([@UID],'Previous Inv'!S:U,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous Inv'!S:U,3,FALSE)),"""")"
+    With Range(Cells(2, FindColumn("Notes")), Cells(TotalRows, FindColumn("Notes")))
+        .Value = .Value
+    End With
+End Sub
 
 
 

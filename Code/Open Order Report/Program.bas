@@ -25,6 +25,7 @@ Sub Main()
 
         Format117 "117 DS"
         Format117 "117 BO"
+        InventoryReconciliation
         
         If Sheets("117 BO").Range("A1").Value <> "" Then
             Sheets("117 BO").Select
