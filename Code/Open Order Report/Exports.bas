@@ -30,10 +30,12 @@ Sub Export117()
         FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
         sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\"
 
+        'Copy Sheets to a new workbook
         Sheets("117 BO").Copy
         Set Wkbk = ActiveWorkbook
         ThisWorkbook.Sheets("117 DS").Copy After:=Wkbk.Sheets(Wkbk.Sheets.Count)
-
+        ThisWorkbook.Sheets("Inventory Reconciliation").Coyp After:=Wkbk.Sheets(Wkbk.Sheets.Count)
+        
         If FolderExists(sPath) = False Then
             MkDir sPath
         End If
