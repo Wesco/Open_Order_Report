@@ -17,13 +17,13 @@ Sub ImportOOR(ISN As String)
             Sheets("117 BO").Select
 
             On Error Resume Next
-            ActiveSheet.ShowAllData
+            ActiveSheet.AutoFilter.ShowAllData
             On Error GoTo 0
             ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 BO").Range("A1")
 
             Sheets("117 DS").Select
             On Error Resume Next
-            ActiveSheet.ShowAllData
+            ActiveSheet.AutoFilter.ShowAllData
             On Error GoTo 0
             ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 DS").Range("A1")
 

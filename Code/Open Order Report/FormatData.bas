@@ -61,6 +61,7 @@ Sub Format117(SheetName As String)
 
         iCol = FindColumn("SUPPLIER NUM")
         iRows = ActiveSheet.UsedRange.Rows.Count
+        Range(Cells(2, iCol), Cells(iRows, iCol)).NumberFormat = "@"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
         ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
