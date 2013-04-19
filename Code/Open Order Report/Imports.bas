@@ -17,7 +17,7 @@ Sub ImportOOR(ISN As String)
             Sheets("117 BO").Select
 
             On Error Resume Next
-            ActiveSheet.AutoFilter.ShowAllData
+            ActiveSheet.ShowAllData
             On Error GoTo 0
             ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 BO").Range("A1")
 
@@ -27,12 +27,6 @@ Sub ImportOOR(ISN As String)
             On Error GoTo 0
             ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 DS").Range("A1")
 
-            Sheets("Inventory Reconciliation").Select
-            On Error Resume Next
-            ActiveSheet.AutoFilter.ShowAllData
-            On Error GoTo 0
-            ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous Inv").Range("A1")
-            
             Application.DisplayAlerts = False
             ActiveWorkbook.Close
             Application.DisplayAlerts = PrevDispAlert
