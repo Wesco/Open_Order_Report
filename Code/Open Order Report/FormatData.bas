@@ -116,7 +116,6 @@ Sub InventoryReconciliation()
     Columns("N:N").Delete
 
     Sheets("Inventory Reconciliation").Select
-    TotalRows = ActiveSheet.UsedRange.Rows.Count
     Columns("N:N").Delete
     ActiveSheet.ListObjects.Add(xlSrcRange, ActiveSheet.UsedRange, , xlYes).Name = "Table1"
     Cells(2, FindColumn("Notes")).Formula = _
@@ -124,7 +123,6 @@ Sub InventoryReconciliation()
     With Range(Cells(2, FindColumn("Notes")), Cells(TotalRows, FindColumn("Notes")))
         .Value = .Value
     End With
-    ActiveSheet.UsedRange.Columns.AutoFit
 End Sub
 
 
