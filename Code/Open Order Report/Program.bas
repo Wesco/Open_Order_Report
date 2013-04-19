@@ -25,7 +25,7 @@ Sub Main()
 
         Format117 "117 DS"
         Format117 "117 BO"
-        
+
         If Sheets("117 BO").Range("A1").Value <> "" Then
             Sheets("117 BO").Select
         Else
@@ -46,7 +46,11 @@ Sub SendMail()
     Dim i As Long
 
     Sheets("117 BO").Select
+    
+    On Error Resume Next
     ISN = Cells(2, FindColumn("IN")).Value
+    On Error GoTo 0
+    
     FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
 
     If ISN = "" Then
