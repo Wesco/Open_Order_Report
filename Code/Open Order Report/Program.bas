@@ -7,8 +7,8 @@ Sub Main()
     Dim ImportCheck As String
 
     Application.ScreenUpdating = False
-    
-    HideSheets
+
+    UnhideSheets
     Clean
 
     'Import 117 Report
@@ -29,8 +29,8 @@ Sub Main()
 
         Format117 "117 DS"
         Format117 "117 BO"
-        UnhideSheets
-        
+        HideSheets
+
         If Sheets("117 BO").Range("A1").Value <> "" Then
             Sheets("117 BO").Select
         Else
@@ -49,9 +49,9 @@ Sub SendMail()
     Dim EmailAddress As String
     Dim FileName As String
     Dim i As Long
-    
+
     UnhideSheets
-    
+
     Sheets("117 BO").Select
 
     On Error Resume Next
@@ -98,8 +98,10 @@ Sub HideSheets()
     Dim s As Variant
 
     For Each s In ThisWorkbook.Sheets
-        If s.Visible = False Then
-            s.Visible = True
+        If s.Name <> "Macro" And s.Name <> "117 BO" And s.Name <> "117 DS" Then
+            If s.Visible = True Then
+                s.Visible = False
+            End If
         End If
     Next
 End Sub
@@ -109,8 +111,8 @@ Sub UnhideSheets()
 
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" And s.Name <> "117 BO" And s.Name <> "117 DS" Then
-            If s.Visible = True Then
-                s.Visible = False
+            If s.Visible = False Then
+                s.Visible = True
             End If
         End If
     Next
