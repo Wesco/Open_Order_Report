@@ -7,6 +7,8 @@ Sub Main()
     Dim ImportCheck As String
 
     Application.ScreenUpdating = False
+    Clean
+    
     'Import 117 Report
     On Error GoTo ImportErr
     ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
