@@ -9,7 +9,8 @@ Sub Export117()
     Dim PrevDispAlert As Boolean
     Dim PrevSheet As Worksheet
     Dim iCol As Integer
-
+    
+    UnhideSheets
     Set PrevSheet = ActiveSheet
 
     Sheets("117 BO").Select
@@ -47,7 +48,7 @@ Sub Export117()
 
     Application.DisplayAlerts = PrevDispAlert
     PrevSheet.Select
-
+    HideSheets
     Exit Sub
 
 SAVE_ERR:

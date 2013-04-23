@@ -7,8 +7,10 @@ Sub Main()
     Dim ImportCheck As String
 
     Application.ScreenUpdating = False
-    Clean
     
+    HideSheets
+    Clean
+
     'Import 117 Report
     On Error GoTo ImportErr
     ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
@@ -27,7 +29,8 @@ Sub Main()
 
         Format117 "117 DS"
         Format117 "117 BO"
-
+        UnhideSheets
+        
         If Sheets("117 BO").Range("A1").Value <> "" Then
             Sheets("117 BO").Select
         Else
@@ -46,13 +49,15 @@ Sub SendMail()
     Dim EmailAddress As String
     Dim FileName As String
     Dim i As Long
-
-    Sheets("117 BO").Select
     
+    UnhideSheets
+    
+    Sheets("117 BO").Select
+
     On Error Resume Next
     ISN = Cells(2, FindColumn("IN")).Value
     On Error GoTo 0
-    
+
     FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
 
     If ISN = "" Then
@@ -76,6 +81,7 @@ Sub SendMail()
               Body:="Please click the link to view the status of your open POs" & "<br><br>" & _
                     """\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName & """"
     End If
+    HideSheets
 End Sub
 
 Sub Clean()
@@ -84,6 +90,28 @@ Sub Clean()
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" Then
             s.Cells.Delete
+        End If
+    Next
+End Sub
+
+Sub HideSheets()
+    Dim s As Variant
+
+    For Each s In ThisWorkbook.Sheets
+        If s.Visible = False Then
+            s.Visible = True
+        End If
+    Next
+End Sub
+
+Sub UnhideSheets()
+    Dim s As Variant
+
+    For Each s In ThisWorkbook.Sheets
+        If s.Name <> "Macro" And s.Name <> "117 BO" And s.Name <> "117 DS" Then
+            If s.Visible = True Then
+                s.Visible = False
+            End If
         End If
     Next
 End Sub
