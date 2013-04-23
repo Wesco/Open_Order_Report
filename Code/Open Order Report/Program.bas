@@ -50,8 +50,8 @@ Sub SendMail()
     Dim FileName As String
     Dim i As Long
 
+    Application.ScreenUpdating = False
     UnhideSheets
-
     Sheets("117 BO").Select
 
     On Error Resume Next
@@ -82,6 +82,7 @@ Sub SendMail()
                     """\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName & """"
     End If
     HideSheets
+    Application.ScreenUpdating = True
 End Sub
 
 Sub Clean()
