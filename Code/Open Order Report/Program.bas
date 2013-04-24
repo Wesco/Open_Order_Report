@@ -48,10 +48,12 @@ Sub SendMail()
     Dim ISN As String
     Dim EmailAddress As String
     Dim FileName As String
+    Dim sPath As String
     Dim i As Long
 
     Application.ScreenUpdating = False
     UnhideSheets
+
     Sheets("117 BO").Select
 
     On Error Resume Next
@@ -76,11 +78,19 @@ Sub SendMail()
     If EmailAddress = "" Then
         MsgBox Prompt:="Email for sales number " & ISN & " could not be found."
     Else
+        sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName
+    End If
+
+    Export117
+
+    If FileExists(sPath) = True Then
         Email SendTo:=EmailAddress, _
               Subject:="Open Order Report", _
-              Body:="Please click the link to view the status of your open POs" & "<br><br>" & _
-                    """\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName & """"
+              Body:="Please click the link or open the attachment to view the status of your open POs" & "<br><br>" & """" & sPath & """", _
+              Attachment:=sPath
     End If
+
+
     HideSheets
     Application.ScreenUpdating = True
 End Sub
