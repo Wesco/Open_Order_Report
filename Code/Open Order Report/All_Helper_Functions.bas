@@ -796,7 +796,7 @@ Sub CheckForUpdates(URL As String)
     Close FileNum
 
     If RegEx.Test(Ver) Then
-        If Ver <> LocalVer Then
+        If CInt(Replace(Ver, ".", "")) > CInt(Replace(LocalVer, ".", "")) Then
             MsgBox Prompt:="An update is available. Please close the macro and get the latest version!", Title:="Update Available"
         End If
     End If
