@@ -401,7 +401,7 @@ Sub ExportCode()
     Dim comp As Variant
     Dim codeFolder As String
     Dim FileName As String
-    
+
     codeFolder = GetWorkbookPath & "Code\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & "\"
 
     On Error Resume Next
@@ -584,7 +584,6 @@ Sub ShowReferences()
         End With
     Next
     Columns.AutoFit
-
     Exit Sub
 
 SHEET_EXISTS:
@@ -785,7 +784,7 @@ Sub CheckForUpdates(URL As String)
     Dim FileNum As Integer
     Dim RegEx As Variant
 
-    Set RegEx = New RegExp
+    Set RegEx = CreateObject("VBScript.RegExp")
     Ver = Left(DownloadTextFile(URL), 5)
     RegEx.Pattern = "[0-9]\.[0-0]\.[0-9]"
     Path = GetWorkbookPath & "Version.txt"
@@ -810,14 +809,11 @@ End Sub
 Function DownloadTextFile(URL As String) As String
     Dim success As Boolean
     Dim responseText As String
-    Dim oHTTP As WinHttp.WinHttpRequest
+    Dim oHTTP As Variant
 
-    Set oHTTP = New WinHttp.WinHttpRequest
+    Set oHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
 
-    oHTTP.Open Method:="GET", URL:=URL, async:=False
-    oHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
-    oHTTP.SetRequestHeader "Content-Type", "multipart/form-data; "
-    oHTTP.Option(WinHttpRequestOption_EnableRedirects) = True
+    oHTTP.Open "GET", URL, False
     oHTTP.Send
     success = oHTTP.WaitForResponse()
 
@@ -831,22 +827,6 @@ Function DownloadTextFile(URL As String) As String
 
     DownloadTextFile = responseText
 End Function
-
-'---------------------------------------------------------------------------------------
-' Proc : ReferenceDependencies
-' Date : 4/25/2013
-' Desc : Adds the references needed for functions in this module
-'---------------------------------------------------------------------------------------
-Sub ReferenceDependencies()
-    'Microsoft VBScript Regular Expressions 5.5
-    AddReference "{3F4DACA7-160D-11D2-A8E9-00104B365C9F}", 5, 5
-    
-    'Microsoft WinHTTP Services, version 5.1
-    AddReference "{662901FC-6951-4854-9EB2-D9A2570F2B2E}", 5, 1
-    
-    'Microsoft Visual Basic for Applications Extensibility 5.3
-    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
-End Sub
 
 
 
