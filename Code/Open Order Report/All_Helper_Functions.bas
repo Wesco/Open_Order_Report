@@ -401,9 +401,7 @@ Sub ExportCode()
     Dim comp As Variant
     Dim codeFolder As String
     Dim FileName As String
-
-    'References Microsoft Visual Basic for Applications Extensibility 5.3
-    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
+    
     codeFolder = GetWorkbookPath & "Code\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & "\"
 
     On Error Resume Next
@@ -438,9 +436,6 @@ Sub ImportModule()
     Dim codeFolder As String
     Dim FileName As String
     Dim WkbkPath As String
-
-    'Adds a reference to Microsoft Visual Basic for Applications Extensibility 5.3
-    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
 
     'Gets the path to this workbook
     WkbkPath = Left$(ThisWorkbook.fullName, InStr(1, ThisWorkbook.fullName, ThisWorkbook.Name, vbTextCompare) - 1)
@@ -726,9 +721,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 Function FindColumn(HeaderText As String) As Integer
     Dim i As Integer: i = 0
-    
+
     FindColumn = i
-    
+
     For i = 1 To ActiveSheet.UsedRange.Columns.Count
         If Trim(Cells(1, i).Value) = HeaderText Then
             FindColumn = i
@@ -736,6 +731,124 @@ Function FindColumn(HeaderText As String) As Integer
         End If
     Next
 End Function
+
+'---------------------------------------------------------------------------------------
+' Proc : IncrementVersion
+' Date : 4/24/2013
+' Desc : Increments the macros version number
+'---------------------------------------------------------------------------------------
+Sub IncrementVersion()
+    Dim Path As String
+    Dim Ver As Variant
+    Dim FileNum As Integer
+    Dim i As Integer
+
+    Path = GetWorkbookPath & "Version.txt"
+    FileNum = FreeFile
+
+    If FileExists(Path) = True Then
+        Open Path For Input As #FileNum
+        Line Input #FileNum, Ver
+        Close FileNum
+
+        Ver = Replace(Ver, ".", "")
+
+        'If version gets to 9.9.9, start over at version 1.0.0
+        If Ver = 999 Then
+            Ver = 100
+        Else
+            Ver = Ver + 1
+        End If
+
+        Ver = Left(Ver, 1) & "." & Mid(Ver, 2, 1) & "." & Right(Ver, 1)
+
+        Open Path For Output As #FileNum
+        Print #FileNum, Ver
+        Close #FileNum
+    Else
+        Open Path For Output As #FileNum
+        Print #FileNum, "1.0.0"
+        Close #FileNum
+    End If
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : CheckForUpdates
+' Date : 4/24/2013
+' Desc : Checks to see if the macro is up to date
+'---------------------------------------------------------------------------------------
+Sub CheckForUpdates(URL As String)
+    Dim Ver As String
+    Dim LocalVer As String
+    Dim Path As String
+    Dim LocalPath As String
+    Dim FileNum As Integer
+    Dim RegEx As Variant
+
+    Set RegEx = New RegExp
+    Ver = Left(DownloadTextFile(URL), 5)
+    RegEx.Pattern = "[0-9]\.[0-0]\.[0-9]"
+    Path = GetWorkbookPath & "Version.txt"
+    FileNum = FreeFile
+
+    Open Path For Input As #FileNum
+    Line Input #FileNum, LocalVer
+    Close FileNum
+
+    If RegEx.Test(Ver) Then
+        If Ver <> LocalVer Then
+            MsgBox Prompt:="An update is available. Please close the macro and get the latest version!", Title:="Update Available"
+        End If
+    End If
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Proc : DownloadTextFile
+' Date : 4/25/2013
+' Desc : Returns the contents of a text file from a website
+'---------------------------------------------------------------------------------------
+Function DownloadTextFile(URL As String) As String
+    Dim success As Boolean
+    Dim responseText As String
+    Dim oHTTP As WinHttp.WinHttpRequest
+
+    Set oHTTP = New WinHttp.WinHttpRequest
+
+    oHTTP.Open Method:="GET", URL:=URL, async:=False
+    oHTTP.SetRequestHeader "User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)"
+    oHTTP.SetRequestHeader "Content-Type", "multipart/form-data; "
+    oHTTP.Option(WinHttpRequestOption_EnableRedirects) = True
+    oHTTP.Send
+    success = oHTTP.WaitForResponse()
+
+    If Not success Then
+        DownloadTextFile = ""
+        Exit Function
+    End If
+
+    responseText = oHTTP.responseText
+    Set oHTTP = Nothing
+
+    DownloadTextFile = responseText
+End Function
+
+'---------------------------------------------------------------------------------------
+' Proc : ReferenceDependencies
+' Date : 4/25/2013
+' Desc : Adds the references needed for functions in this module
+'---------------------------------------------------------------------------------------
+Sub ReferenceDependencies()
+    'Microsoft VBScript Regular Expressions 5.5
+    AddReference "{3F4DACA7-160D-11D2-A8E9-00104B365C9F}", 5, 5
+    
+    'Microsoft WinHTTP Services, version 5.1
+    AddReference "{662901FC-6951-4854-9EB2-D9A2570F2B2E}", 5, 1
+    
+    'Microsoft Visual Basic for Applications Extensibility 5.3
+    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
+End Sub
+
+
 
 
 
