@@ -83,7 +83,21 @@ Sub Format117(SheetName As String)
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
         ActiveSheet.UsedRange.Columns.AutoFit
+
+        With Sheets(SheetName).ListObjects("Table1").Sort
+            .SortFields.Clear
+            .SortFields.Add Key:=Range("Table1[[#All],[PO NUMBER]]"), _
+                            SortOn:=xlSortOnValues, _
+                            Order:=xlAscending, _
+                            DataOption:=xlSortNormal
+            .Header = xlYes
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
+            .Apply
+        End With
     End If
+
     PrevSheet.Select
 End Sub
 

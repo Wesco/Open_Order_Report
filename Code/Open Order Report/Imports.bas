@@ -48,9 +48,6 @@ Sub ImportSupplierContacts()
     Application.DisplayAlerts = False
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevStatus
-
-    FillInfo FunctionName:="ImportSupplierContacts", _
-             Result:="Complete"
 End Sub
 
 Sub ImportSalesContacts()
@@ -66,9 +63,6 @@ Sub ImportSalesContacts()
     Application.DisplayAlerts = False
     ActiveWorkbook.Close
     Application.DisplayAlerts = PrevStatus
-
-    FillInfo FunctionName:="ImportSalesContacts", _
-             Result:="Complete"
 End Sub
 
 

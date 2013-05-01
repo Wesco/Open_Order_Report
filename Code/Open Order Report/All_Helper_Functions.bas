@@ -295,11 +295,6 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
     Range(Cells(1, 1), Cells(UBound(aRng, 1), UBound(aRng, 2))) = aRng
     Rows(1).Insert
     Range(Cells(1, 1), Cells(1, UBound(aHeaders, 2))) = aHeaders
-    FillInfo "FilterSheet", _
-             "", _
-             "Filter: " & sFilter & vbCrLf & "Col: " & Columns(ColNum).Address(False, False) & vbCrLf & "Match: " & Match, _
-             Timer - StartTime, _
-             "Complete"
 End Sub
 
 
@@ -330,22 +325,7 @@ Sub UserImportFile(DestRange As Range, DelFile As Boolean)
         If DelFile = True Then
             DeleteFile File
         End If
-
-        FillInfo FunctionName:="UserImportFile", _
-                 Parameters:="FileName: " & File, _
-                 FileDate:=FileDate, _
-                 ExecutionTime:=Timer - StartTime, _
-                 Result:="Complete"
-
-        FillInfo FunctionName:="", _
-                 Parameters:="DestRange: " & DestRange.Address(False, False), _
-                 Result:="Complete"
     Else
-        FillInfo FunctionName:="UserImportFile", _
-                 Parameters:="DestRange: " & DestRange.Address(False, False), _
-                 ExecutionTime:=Timer - StartTime, _
-                 Result:="Failed - User Aborted"
-        Sheets("Info").Select
         Err.Raise 18
     End If
 
@@ -632,18 +612,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
             Application.DisplayAlerts = False
             ActiveWorkbook.Close
             Application.DisplayAlerts = True
-
-            FillInfo FunctionName:="Import117byISN", _
-                     Parameters:="Sales #: " & ISN, _
-                     Result:="Complete"
-            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
-            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
         Else
-            FillInfo FunctionName:="Import117byISN", _
-                     Parameters:="Sales #: " & ISN, _
-                     Result:="Failed - File not found"
-            FillInfo Parameters:="Report Type: " & ReportTypeText(RepType)
-            FillInfo Parameters:="Destination: " & Destination.Address(False, False)
             MsgBox Prompt:=ReportTypeText(RepType) & " report not found.", Title:="Error 53"
         End If
     Else
