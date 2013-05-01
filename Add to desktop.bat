@@ -11,6 +11,5 @@ copy "Open Order Report.lnk" "%userprofile%\Desktop"
 ECHO -------------------------------------
 ECHO.
 ECHO.
-ECHO.
 ECHO Press any key to quit..
 pause > nul
