@@ -76,19 +76,21 @@ Sub RecMkDir(ByVal sPath As String)
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Proc  : Sub Email
+' Proc  : Function Email
 ' Date  : 10/11/2012
 ' Desc  : Sends an email
 ' Ex    : Email SendTo:=email@example.com, Subject:="example email", Body:="Email Body"
 '---------------------------------------------------------------------------------------
-Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optional Subject As String, Optional Body As String, Optional Attachment As Variant)
+Function Email(SendTo As String, Optional CC As String, Optional BCC As String, Optional Subject As String, Optional Body As String, Optional Attachment As Variant) As Boolean
     Dim s As Variant              'Attachment string if array is passed
     Dim Mail_Object As Variant    'Outlook application object
     Dim Mail_Single As Variant    'Email object
-
+    Dim Mail_Sent As Boolean      'False if an error occurs when mail is being sent
+    
     Set Mail_Object = CreateObject("Outlook.Application")
     Set Mail_Single = Mail_Object.CreateItem(0)
-
+    Mail_Sent = True
+    
     With Mail_Single
         'Add attachments
         Select Case TypeName(Attachment)
@@ -110,7 +112,7 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
 
         'Setup email
         .Subject = Subject
-        .To = SendTo
+        .TO = SendTo
         .CC = CC
         .BCC = BCC
         .HTMLbody = Body
@@ -118,18 +120,21 @@ Sub Email(SendTo As String, Optional CC As String, Optional BCC As String, Optio
         .Send
         On Error GoTo 0
     End With
-
+    
     'Give the email time to send
     Sleep 1500
-    Exit Sub
+    
+    Email = True
+    Exit Function
 
 SEND_FAILED:
     With Mail_Single
-        MsgBox "Mail to '" & .To & "' could not be sent."
+        MsgBox "Mail to '" & .TO & "' could not be sent."
         .Delete
     End With
+    Mail_Sent = False
     Resume Next
-End Sub
+End Function
 
 '---------------------------------------------------------------------------------------
 ' Proc  : Function ImportGaps
