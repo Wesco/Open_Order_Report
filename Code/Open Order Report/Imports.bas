@@ -2,6 +2,7 @@ Attribute VB_Name = "Imports"
 Option Explicit
 
 Sub ImportOOR(ISN As String)
+    Dim Wkbk As Workbook
     Dim PrevDispAlert As Boolean
     Dim sPath As String
     Dim i As Integer
@@ -13,19 +14,23 @@ Sub ImportOOR(ISN As String)
 
         If FileExists(sPath) Then
             Workbooks.Open sPath
+            Set Wkbk = ActiveWorkbook
 
             Sheets("117 BO").Select
-
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
             On Error GoTo 0
-            ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 BO").Range("A1")
+            ActiveSheet.Name = "Previous 117 BO"
+            ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+            Wkbk.Activate
 
             Sheets("117 DS").Select
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
             On Error GoTo 0
-            ActiveSheet.UsedRange.Copy Destination:=ThisWorkbook.Sheets("Previous 117 DS").Range("A1")
+            ActiveSheet.Name = "Previous 117 DS"
+            ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
+            Wkbk.Activate
 
             Application.DisplayAlerts = False
             ActiveWorkbook.Close
