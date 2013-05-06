@@ -112,7 +112,7 @@ Function Email(SendTo As String, Optional CC As String, Optional BCC As String, 
 
         'Setup email
         .Subject = Subject
-        .TO = SendTo
+        .To = SendTo
         .CC = CC
         .BCC = BCC
         .HTMLbody = Body
@@ -129,7 +129,7 @@ Function Email(SendTo As String, Optional CC As String, Optional BCC As String, 
 
 SEND_FAILED:
     With Mail_Single
-        MsgBox "Mail to '" & .TO & "' could not be sent."
+        MsgBox "Mail to '" & .To & "' could not be sent."
         .Delete
     End With
     Mail_Sent = False

@@ -86,9 +86,9 @@ Sub SendMail()
 
     If FileExists(sPath) = True Then
         MailSent = Email(SendTo:=EmailAddress, _
-                   Subject:="Open Order Report", _
-                   Body:="Please click the link or open the attachment to view the status of your open POs" & "<br><br>" & """" & sPath & """", _
-                   Attachment:=sPath)
+                         Subject:="Open Order Report", _
+                         Body:="Please click the link or open the attachment to view the status of your open POs" & "<br><br>" & """" & sPath & """", _
+                         Attachment:=sPath)
         If MailSent = True Then
             MsgBox "Email to " & EmailAddress & ". was sent successfully."
         End If
@@ -101,13 +101,23 @@ End Sub
 
 Sub Clean()
     Dim s As Variant
+    Dim PrevDispAlert As Boolean
+    
+    PrevDispAlert = Application.DisplayAlerts
+    Application.DisplayAlerts = False
+    
     UnhideSheets
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" Then
             s.Cells.Delete
         End If
+        If s.Name = "Previous 117 DS" Or s.Name = "Previous 117 BO" Then
+            s.Delete
+        End If
     Next
     HideSheets
+    
+    Application.DisplayAlerts = PrevDispAlert
 End Sub
 
 Sub HideSheets()

@@ -5,6 +5,7 @@ Sub Format117(SheetName As String)
     Dim PrevSheet As Worksheet
     Dim iCol As Integer
     Dim iRows As Long
+    Dim i As Long
 
     Set PrevSheet = ActiveSheet
     Sheets(SheetName).Select
@@ -81,6 +82,34 @@ Sub Format117(SheetName As String)
         Cells(2, iCol).Formula = _
         "=IFERROR(IF(VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)),"""")"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+        iCol = ActiveSheet.UsedRange.Columns.Count + 1
+        Cells(1, iCol).Value = "Address"
+        Cells(2, iCol).Formula = "=IFERROR(CELL(""address"",INDEX('Previous " & SheetName & "'!R:R,MATCH([@UID],'Previous " & SheetName & "'!R:R,0),1)),"""")"
+        Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+        iCol = ActiveSheet.UsedRange.Columns.Count + 1
+        Cells(1, iCol).Value = "Cell"
+        Cells(2, iCol).Formula = "=RIGHT([@Address],LEN([@Address]) -" & Len(ActiveWorkbook.Name) + Len("Previous ") + Len(SheetName) + 5 & ")"
+        Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+        iCol = ActiveSheet.UsedRange.Columns.Count + 1
+        Cells(1, iCol).Value = "Absolute"
+        Cells(2, iCol).Formula = "=SUBSTITUTE([@Cell],""$"","""")"
+        Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
+
+        Columns("U:V").Delete
+
+        On Error Resume Next
+        For i = 2 To iRows
+            If Sheets("Previous " & SheetName).Range(Sheets(SheetName).Cells(i, 21).Value).Interior.Color <> "16777215" Then
+                Range(Cells(i, 1), Cells(i, 20)).Interior.Color = _
+                Sheets("Previous " & SheetName).Range(Sheets(SheetName).Cells(i, 21).Value).Interior.Color
+            End If
+        Next
+        On Error GoTo 0
+
+        Columns("U:U").Delete
 
         ActiveSheet.UsedRange.Columns.AutoFit
 
