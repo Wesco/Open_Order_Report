@@ -20,6 +20,8 @@ Sub ImportOOR(ISN As String)
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
             ActiveSheet.ShowAllData
+            ActiveSheet.UsedRange.Columns.Hidden = False
+            ActiveSheet.UsedRange.Rows.Hidden = False
             On Error GoTo 0
             ActiveSheet.Name = "Previous 117 BO"
             ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
@@ -29,6 +31,8 @@ Sub ImportOOR(ISN As String)
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
             ActiveSheet.ShowAllData
+            ActiveSheet.UsedRange.Columns.Hidden = False
+            ActiveSheet.UsedRange.Rows.Hidden = False
             On Error GoTo 0
             ActiveSheet.Name = "Previous 117 DS"
             ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
