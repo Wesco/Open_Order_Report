@@ -19,6 +19,7 @@ Sub ImportOOR(ISN As String)
             Sheets("117 BO").Select
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
+            ActiveSheet.ShowAllData
             On Error GoTo 0
             ActiveSheet.Name = "Previous 117 BO"
             ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
@@ -27,6 +28,7 @@ Sub ImportOOR(ISN As String)
             Sheets("117 DS").Select
             On Error Resume Next
             ActiveSheet.AutoFilter.ShowAllData
+            ActiveSheet.ShowAllData
             On Error GoTo 0
             ActiveSheet.Name = "Previous 117 DS"
             ActiveSheet.Copy After:=ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count)
