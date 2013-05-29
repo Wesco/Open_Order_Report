@@ -62,6 +62,11 @@ Sub Format117(SheetName As String)
 
         iCol = FindColumn("SUPPLIER NUM")
         iRows = ActiveSheet.UsedRange.Rows.Count
+        
+        On Error GoTo COL_ERR
+        If iCol = 0 Then Err.Raise 50000
+        On Error GoTo 0
+        
         Range(Cells(2, iCol), Cells(iRows, iCol)).NumberFormat = "@"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
@@ -128,6 +133,10 @@ Sub Format117(SheetName As String)
     End If
 
     PrevSheet.Select
+Exit Sub
+
+COL_ERR:
+MsgBox "Column ""SUPPLIER NUM"" on " & ActiveSheet.Name & " could not be found.", vbOKOnly, "Error"
 End Sub
 
 
