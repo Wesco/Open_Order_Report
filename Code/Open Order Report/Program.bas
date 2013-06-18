@@ -102,10 +102,10 @@ End Sub
 Sub Clean()
     Dim s As Variant
     Dim PrevDispAlert As Boolean
-    
+
     PrevDispAlert = Application.DisplayAlerts
     Application.DisplayAlerts = False
-    
+
     UnhideSheets
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" Then
@@ -115,8 +115,13 @@ Sub Clean()
             s.Delete
         End If
     Next
-    HideSheets
     
+    Sheets.Add After:=Sheets(Sheets.Count)
+    ActiveSheet.Name = "Previous 117 DS"
+    Sheets.Add After:=Sheets(Sheets.Count)
+    ActiveSheet.Name = "Previous 117 BO"
+    
+    HideSheets
     Application.DisplayAlerts = PrevDispAlert
 End Sub
 
