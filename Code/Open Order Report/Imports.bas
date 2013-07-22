@@ -14,7 +14,7 @@ Sub ImportOOR(ISN As String)
 
     If Dir(Path) <> "" Then
         For i = 0 To 365
-            FileName = Format(Date - i, "m-dd-yy") & " OOR.xlsx"
+            FileName = Format(Date - i, "yyyy-mm-dd") & " OOR.xlsx"
             If FileExists(Path & FileName) Then
                 Sheets("Previous 117 BO").Delete
                 Sheets("Previous 117 DS").Delete

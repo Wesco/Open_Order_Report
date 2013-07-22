@@ -28,7 +28,7 @@ Sub Export117()
     End If
 
     If ISN <> "" Then
-        FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
+        FileName = Format(Date, "yyyy-mm-dd") & " OOR.xlsx"
         sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\"
 
         Sheets("117 BO").Copy

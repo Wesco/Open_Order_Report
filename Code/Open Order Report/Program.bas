@@ -61,7 +61,7 @@ Sub SendMail()
     ISN = Cells(2, FindColumn("IN")).Value
     On Error GoTo 0
 
-    FileName = Format(Date, "m-dd-yy") & " OOR.xlsx"
+    FileName = Format(Date, "yyyy-mm-dd") & " OOR.xlsx"
 
     If ISN = "" Then
         Sheets("117 DS").Select
