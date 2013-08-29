@@ -3,6 +3,9 @@ Option Explicit
 
 Sub Format117(SheetName As String)
     Dim PrevSheet As Worksheet
+    Dim UIDCol As Variant
+    Dim NotesCol As Variant
+    Dim Rng As String
     Dim iCol As Integer
     Dim iRows As Long
     Dim i As Long
@@ -37,7 +40,7 @@ Sub Format117(SheetName As String)
         DeleteColumn "SHIP COMPLETE"
         DeleteColumn "SHIP DATE"
         DeleteColumn "EXTENSION"
-        DeleteColumn "REQUIRED DATE (LI)"
+        'DeleteColumn "REQUIRED DATE (LI)"
         DeleteColumn "DISCOUNT"
         DeleteColumn "UNIT PRICE"
         DeleteColumn "LGST"
@@ -62,11 +65,11 @@ Sub Format117(SheetName As String)
 
         iCol = FindColumn("SUPPLIER NUM")
         iRows = ActiveSheet.UsedRange.Rows.Count
-        
+
         On Error GoTo COL_ERR
         If iCol = 0 Then Err.Raise 50000
         On Error GoTo 0
-        
+
         Range(Cells(2, iCol), Cells(iRows, iCol)).NumberFormat = "@"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
@@ -82,15 +85,24 @@ Sub Format117(SheetName As String)
         Cells(2, iCol).Formula = "=IFERROR(VLOOKUP(TRIM([@[SUPPLIER NUM]]),'Supplier Contacts'!A:B,2,FALSE),"""")"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
+        Sheets("Previous " & SheetName).Select
+        UIDCol = Split(Columns(FindColumn("UID")).Address(False, False), ":")
+        NotesCol = Split(Columns(FindColumn("Notes")).Address(False, False), ":")
+        Rng = UIDCol(1) & ":" & NotesCol(1)
+        Sheets(SheetName).Select
         iCol = ActiveSheet.UsedRange.Columns.Count + 1
         Cells(1, iCol).Value = "Notes"
         Cells(2, iCol).Formula = _
-        "=IFERROR(IF(VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)=0,"""",VLOOKUP([@UID],'Previous " & SheetName & "'!R:T,3,FALSE)),"""")"
+        "=IFERROR(IF(VLOOKUP([@UID],'Previous " & SheetName & "'!" & Rng & "," & Columns(Rng).Count & _
+                                 ",FALSE)=0,"""",VLOOKUP([@UID],'Previous " & SheetName & "'!" & Rng & "," & Columns(Rng).Count & ",FALSE)),"""")"
+
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
         iCol = ActiveSheet.UsedRange.Columns.Count + 1
         Cells(1, iCol).Value = "Address"
-        Cells(2, iCol).Formula = "=IFERROR(CELL(""address"",INDEX('Previous " & SheetName & "'!R:R,MATCH([@UID],'Previous " & SheetName & "'!R:R,0),1)),"""")"
+        Cells(2, iCol).Formula = "=IFERROR(CELL(""address"",INDEX('Previous " & _
+                                 SheetName & "'!" & Columns(UIDCol(1)).Address(False, False) & ",MATCH([@UID],'Previous " & SheetName & _
+                                 "'!" & Columns(UIDCol(1)).Address(False, False) & ",0),1)),"""")"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
         iCol = ActiveSheet.UsedRange.Columns.Count + 1
@@ -103,7 +115,8 @@ Sub Format117(SheetName As String)
         Cells(2, iCol).Formula = "=SUBSTITUTE([@Cell],""$"","""")"
         Range(Cells(2, iCol), Cells(iRows, iCol)).Value = Range(Cells(2, iCol), Cells(iRows, iCol)).Value
 
-        Columns("U:V").Delete
+        Columns(FindColumn("Address")).Delete
+        Columns(FindColumn("Cell")).Delete
 
         On Error Resume Next
         For i = 2 To iRows
@@ -114,7 +127,7 @@ Sub Format117(SheetName As String)
         Next
         On Error GoTo 0
 
-        Columns("U:U").Delete
+        Columns(FindColumn("Absolute")).Delete
 
         ActiveSheet.UsedRange.Columns.AutoFit
 
@@ -133,21 +146,11 @@ Sub Format117(SheetName As String)
     End If
 
     PrevSheet.Select
-Exit Sub
+    Exit Sub
 
 COL_ERR:
-MsgBox "Column ""SUPPLIER NUM"" on " & ActiveSheet.Name & " could not be found.", vbOKOnly, "Error"
+    MsgBox "Column ""SUPPLIER NUM"" on " & ActiveSheet.Name & " could not be found.", vbOKOnly, "Error"
 End Sub
-
-
-
-
-
-
-
-
-
-
 
 
 
