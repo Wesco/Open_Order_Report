@@ -386,27 +386,45 @@ Sub ExportCode()
     Dim comp As Variant
     Dim codeFolder As String
     Dim FileName As String
+    Dim File As String
+    Dim WkbkPath As String
 
-    codeFolder = GetWorkbookPath & "Code\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & "\"
+
+    'References Microsoft Visual Basic for Applications Extensibility 5.3
+    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
+    WkbkPath = Left$(ThisWorkbook.fullName, InStr(1, ThisWorkbook.fullName, ThisWorkbook.Name, vbTextCompare) - 1)
+    codeFolder = WkbkPath & "Code\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & "\"
 
     On Error Resume Next
-    RecMkDir codeFolder
+    If Dir(codeFolder) = "" Then
+        RecMkDir codeFolder
+    End If
     On Error GoTo 0
 
+    'Remove all previously exported modules
+    File = Dir(codeFolder)
+    Do While File <> ""
+        DeleteFile codeFolder & File
+        File = Dir
+    Loop
+
+    'Export modules in current project
     For Each comp In ThisWorkbook.VBProject.VBComponents
         Select Case comp.Type
             Case 1
                 FileName = codeFolder & comp.Name & ".bas"
-                DeleteFile FileName
                 comp.Export FileName
             Case 2
                 FileName = codeFolder & comp.Name & ".cls"
-                DeleteFile FileName
                 comp.Export FileName
             Case 3
                 FileName = codeFolder & comp.Name & ".frm"
-                DeleteFile FileName
                 comp.Export FileName
+            Case 100
+                If comp.Name = "ThisWorkbook" Then
+                    FileName = codeFolder & comp.Name & ".bas"
+                    comp.Export FileName
+                End If
         End Select
     Next
 End Sub
@@ -704,106 +722,3 @@ Function FindColumn(HeaderText As String) As Integer
         End If
     Next
 End Function
-
-'---------------------------------------------------------------------------------------
-' Proc : IncrementVersion
-' Date : 4/24/2013
-' Desc : Increments the macros version number
-'---------------------------------------------------------------------------------------
-Sub IncrementVersion()
-    Dim Path As String
-    Dim Ver As Variant
-    Dim FileNum As Integer
-    Dim i As Integer
-
-    Path = GetWorkbookPath & "Version.txt"
-    FileNum = FreeFile
-
-    If FileExists(Path) = True Then
-        Open Path For Input As #FileNum
-        Line Input #FileNum, Ver
-        Close FileNum
-
-        Ver = Replace(Ver, ".", "")
-
-        'If version gets to 9.9.9, start over at version 1.0.0
-        If Ver = 999 Then
-            Ver = 100
-        Else
-            Ver = Ver + 1
-        End If
-
-        Ver = Left(Ver, 1) & "." & Mid(Ver, 2, 1) & "." & Right(Ver, 1)
-
-        Open Path For Output As #FileNum
-        Print #FileNum, Ver
-        Close #FileNum
-    Else
-        Open Path For Output As #FileNum
-        Print #FileNum, "1.0.0"
-        Close #FileNum
-    End If
-End Sub
-
-'---------------------------------------------------------------------------------------
-' Proc : CheckForUpdates
-' Date : 4/24/2013
-' Desc : Checks to see if the macro is up to date
-'---------------------------------------------------------------------------------------
-Sub CheckForUpdates(URL As String)
-    Dim Ver As String
-    Dim LocalVer As String
-    Dim Path As String
-    Dim LocalPath As String
-    Dim FileNum As Integer
-    Dim RegEx As Variant
-
-    Set RegEx = CreateObject("VBScript.RegExp")
-    Ver = Left(DownloadTextFile(URL), 5)
-    RegEx.Pattern = "[0-9]\.[0-0]\.[0-9]"
-    Path = GetWorkbookPath & "Version.txt"
-    FileNum = FreeFile
-
-    Open Path For Input As #FileNum
-    Line Input #FileNum, LocalVer
-    Close FileNum
-
-    If RegEx.Test(Ver) Then
-        If CInt(Replace(Ver, ".", "")) > CInt(Replace(LocalVer, ".", "")) Then
-            MsgBox Prompt:="An update is available. Please close the macro and get the latest version!", Title:="Update Available"
-        End If
-    End If
-End Sub
-
-'---------------------------------------------------------------------------------------
-' Proc : DownloadTextFile
-' Date : 4/25/2013
-' Desc : Returns the contents of a text file from a website
-'---------------------------------------------------------------------------------------
-Function DownloadTextFile(URL As String) As String
-    Dim success As Boolean
-    Dim responseText As String
-    Dim oHTTP As Variant
-
-    Set oHTTP = CreateObject("WinHttp.WinHttpRequest.5.1")
-
-    oHTTP.Open "GET", URL, False
-    oHTTP.Send
-    success = oHTTP.WaitForResponse()
-
-    If Not success Then
-        DownloadTextFile = ""
-        Exit Function
-    End If
-
-    responseText = oHTTP.responseText
-    Set oHTTP = Nothing
-
-    DownloadTextFile = responseText
-End Function
-
-
-
-
-
-
