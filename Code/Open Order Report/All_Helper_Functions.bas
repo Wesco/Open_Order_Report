@@ -622,7 +622,7 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
                 FileName = "3615 " & Format(Date, "yyyy-mm-dd") & " BACKORDERS.xlsx"
         End Select
 
-        sPath = "\\br3615gaps\gaps\3615 117 Report\ByInsideSalesNumber\" & ISN & "\" & FileName
+        sPath = "\\br3615gaps\gaps\3615 117 Report\DETAIL\ByInsideSalesperson\" & ISN & "\" & FileName
 
         If FileExists(sPath) Then
             Workbooks.Open sPath
