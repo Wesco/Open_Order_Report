@@ -3,6 +3,7 @@ Open Order Report
 
 ### Prerequisites / Installation Instructions
 
+- Download the latest version <a href="https://github.com/Wesco/Open_Order_Report/releases/latest">here</a>
 - Install SaveWorkbook Add-In
 - Run Setup.exe
 
