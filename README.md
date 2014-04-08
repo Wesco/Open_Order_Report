@@ -4,6 +4,7 @@ Open Order Report
 ### Prerequisites / Installation Instructions
 
 - Install SaveWorkbook Add-In
+- Run Setup.exe
 
 ### Instructions
 
