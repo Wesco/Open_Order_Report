@@ -616,10 +616,10 @@ Sub Import117byISN(RepType As ReportType, Destination As Range, Optional ByVal I
     If ISN <> "" Then
         Select Case RepType
             Case ReportType.DS:
-                FileName = "3615 " & Format(Date, "yyyy-mm-dd") & " DSORDERS.xlsx"
+                FileName = "3615 " & Format(Date, "yyyy-mm-dd") & " DSORDERS.csv"
 
             Case ReportType.BO:
-                FileName = "3615 " & Format(Date, "yyyy-mm-dd") & " BACKORDERS.xlsx"
+                FileName = "3615 " & Format(Date, "yyyy-mm-dd") & " BACKORDERS.csv"
         End Select
 
         sPath = "\\br3615gaps\gaps\3615 117 Report\DETAIL\ByInsideSalesperson\" & ISN & "\" & FileName
