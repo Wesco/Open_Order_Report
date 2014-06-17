@@ -38,9 +38,8 @@ Sub Format117(SheetName As String)
         DeleteColumn "PURCHASE DATE"
         DeleteColumn "OLD PROMISE DATE"
         DeleteColumn "SHIP COMPLETE"
-        DeleteColumn "SHIP DATE"
+        DeleteColumn "PRINT PICK TICKET DATE"
         DeleteColumn "EXTENSION"
-        'DeleteColumn "REQUIRED DATE (LI)"
         DeleteColumn "DISCOUNT"
         DeleteColumn "UNIT PRICE"
         DeleteColumn "LGST"
@@ -54,7 +53,7 @@ Sub Format117(SheetName As String)
         DeleteColumn "SHIP TO"
         DeleteColumn "CUSTOMER PART NUMBER"
         DeleteColumn "CUST PO LINE #"
-        DeleteColumn "REQUIRED DATE (HR)"
+        DeleteColumn "CUSTOMER DELIVERY DATE (HR)"
         DeleteColumn "TAX ACCOUNT"
         DeleteColumn "TAX"
         DeleteColumn "CYCLE"
@@ -117,15 +116,6 @@ Sub Format117(SheetName As String)
 
         Columns(FindColumn("Address")).Delete
         Columns(FindColumn("Cell")).Delete
-
-        On Error Resume Next
-        For i = 2 To iRows
-            If Sheets("Previous " & SheetName).Range(Sheets(SheetName).Cells(i, 21).Value).Interior.Color <> "16777215" Then
-                Range(Cells(i, 1), Cells(i, 20)).Interior.Color = _
-                Sheets("Previous " & SheetName).Range(Sheets(SheetName).Cells(i, 21).Value).Interior.Color
-            End If
-        Next
-        On Error GoTo 0
 
         Columns(FindColumn("Absolute")).Delete
 

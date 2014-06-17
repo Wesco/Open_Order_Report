@@ -702,6 +702,10 @@ Sub DeleteColumn(HeaderText As String)
             Columns(i).Delete
             Exit For
         End If
+        
+        If i = 1 Then
+            Err.Raise 50000, "DeleteColumn", "Column " & HeaderText & " not found."
+        End If
     Next
 End Sub
 
