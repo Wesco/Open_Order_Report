@@ -3,6 +3,8 @@ Option Explicit
 
 Sub Format117(SheetName As String)
     Dim PrevSheet As Worksheet
+    Dim TotalCols As Integer
+    Dim Cols As Variant
     Dim UIDCol As Variant
     Dim NotesCol As Variant
     Dim Rng As String
@@ -61,6 +63,19 @@ Sub Format117(SheetName As String)
         DeleteColumn "ERROR"
         DeleteColumn "WAREHOUSE"
         DeleteColumn "STATUS"
+
+        Cols = Array("CUSTOMER", "ORDER NO", "ORDER DATE", "CUSTOMER REFERENCE NO", _
+                     "IN", "LINE NO", "ITEM NUMBER", "ITEM DESCRIPTION", "ORDER QTY", _
+                     "AVAILABLE QTY", "QTY TO SHIP", "BO QTY", "QTY SHIPPED", _
+                     "CUSTOMER DELIVERY DATE (LI)", "PO NUMBER", "PROMISE DATE", "PO LINE NUM", _
+                     "SUPPLIER NUM")
+        TotalCols = Columns(Columns.Count).End(xlToLeft).Column
+        
+        For i = 1 To TotalCols
+            If Cells(1, i).Value <> Cols(i - 1) Or UBound(Cols) + 1 <> TotalCols Then
+                Err.Raise 50000, "Format117", "The 117 report has changed."
+            End If
+        Next
 
         iCol = FindColumn("SUPPLIER NUM")
         iRows = ActiveSheet.UsedRange.Rows.Count
