@@ -1,59 +1,102 @@
 Attribute VB_Name = "Exports"
 Option Explicit
 
-Sub Export117()
-    Dim Wkbk As Workbook
-    Dim sPath As String
+Sub ExportOOR()
+    Dim FilePath As String
     Dim FileName As String
-    Dim ISN As String
-    Dim PrevDispAlert As Boolean
-    Dim PrevSheet As Worksheet
-    Dim iCol As Integer
-    
-    UnhideSheets
-    Set PrevSheet = ActiveSheet
+    Dim EmailBody As String
+    Dim Saved As Boolean
 
-    Sheets("117 BO").Select
-    PrevDispAlert = Application.DisplayAlerts
+    FilePath = "\\br3615gaps\gaps\" & sBranch & " Open Order Report\" & sSequence & "\" & sISN & "\"
 
-    iCol = FindColumn("IN")
-    If iCol <> 0 Then
-        ISN = Sheets("117 BO").Cells(2, FindColumn("IN")).Value
-    End If
-    
-    Sheets("117 DS").Select
-    iCol = FindColumn("IN")
-    If iCol <> 0 Then
-        ISN = Sheets("117 DS").Cells(2, FindColumn("IN")).Value
-    End If
-
-    If ISN <> "" Then
-        FileName = Format(Date, "yyyy-mm-dd") & " OOR.xlsx"
-        sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\"
-
-        Sheets("117 BO").Copy
-        Set Wkbk = ActiveWorkbook
-        ThisWorkbook.Sheets("117 DS").Copy After:=Wkbk.Sheets(Wkbk.Sheets.Count)
-
-        If FolderExists(sPath) = False Then
-            MkDir sPath
+    If Sheets("117 DS").Range("A1").Value <> "" Then
+        FileName = Format(Date, "yyyy-mm-dd") & " DS OOR.xlsx"
+        Saved = SaveWorkbook(Sheets("117 DS"), FilePath, FileName)
+        If Saved = True Then
+            EmailBody = "<a href=""file:///" & FilePath & FileName & """>DS Report</a>"
         End If
-
-        On Error GoTo SAVE_ERR
-        ActiveWorkbook.SaveAs sPath & FileName
-        On Error GoTo 0
-        Application.DisplayAlerts = False
-        ActiveWorkbook.Close
     End If
 
-    Application.DisplayAlerts = PrevDispAlert
-    PrevSheet.Select
-    HideSheets
-    Exit Sub
-
-SAVE_ERR:
-    If Err.Description = "Cannot access '" & FileName & "'." Then
-        MsgBox Prompt:=Err.Description
+    If Sheets("117 BO").Range("A1").Value <> "" Then
+        FileName = Format(Date, "yyyy-mm-dd") & " BO OOR.xlsx"
+        Saved = SaveWorkbook(Sheets("117 BO"), FilePath, FileName)
+        If Saved = True Then
+            If EmailBody = "" Then
+                EmailBody = "<a href=""file:///" & FilePath & FileName & """>BO Report</a>"
+            Else
+                EmailBody = EmailBody & "<br><a href=""file://" & FilePath & FileName & """>BO Report</a>"
+            End If
+        End If
     End If
-    Resume Next
+    Email Environ("username") & "@wesco.com", _
+          Subject:="Open Order Report", _
+          Body:=EmailBody, _
+          MailType:=SMTP
 End Sub
+
+Sub ExportCustOOR()
+    Dim FilePath As String
+    Dim FileName As String
+    Dim EmailBody As String
+    Dim Files As Variant
+    Dim Saved As Boolean
+
+    FilePath = "\\br3615gaps\gaps\" & sBranch & " Open Order Report\" & sSequence & "\" & sISN & "\"
+
+    If Sheets("117 DS").Range("A1").Value <> "" Then
+        FileName = Format(Date, "yyyy-mm-dd") & " CUST DS OOR.xlsx"
+        Saved = SaveWorkbook(Sheets("117 DS"), FilePath, FileName)
+        If Saved = True Then
+            Files = FilePath & FileName
+            EmailBody = "Customer DS OOR attached."
+        End If
+    End If
+
+    If Sheets("117 BO").Range("A1").Value <> "" Then
+        FileName = Format(Date, "yyyy-mm-dd") & " CUST BO OOR.xlsx"
+        Saved = SaveWorkbook(Sheets("117 BO"), FilePath, FileName)
+        If Saved = True Then
+            If TypeName(Files) = "String" Then
+                Files = Array(Files, FilePath & FileName)
+                EmailBody = "Customer DS & BO OOR attached."
+            Else
+                Files = FilePath & FileName
+                EmailBody = "Customer BO OOR attached."
+            End If
+        End If
+    End If
+
+    Email Environ("username") & "@wesco.com", _
+          Subject:="Customer Open Order Report", _
+          Body:=EmailBody, _
+          MailType:=SMTP, _
+          Attachment:=Files
+End Sub
+
+Private Function SaveWorkbook(SourceSheet As Worksheet, FilePath As String, FileName As String) As Boolean
+    Dim PrevDispAlert As Boolean
+
+    PrevDispAlert = Application.DisplayAlerts
+    Application.DisplayAlerts = False
+
+    If Not FolderExists(FilePath) Then
+        RecMkDir FilePath
+    End If
+
+    SourceSheet.Copy
+
+    On Error GoTo FAILED_SAVE
+    ActiveWorkbook.SaveAs FilePath & FileName, xlOpenXMLWorkbook
+    On Error GoTo 0
+
+    ActiveWorkbook.Close
+    PrevDispAlert = PrevDispAlert
+    SaveWorkbook = True
+    Exit Function
+
+FAILED_SAVE:
+    MsgBox "An error occured while saving."
+    ThisWorkbook.Activate
+    PrevDispAlert = PrevDispAlert
+    SaveWorkbook = False
+End Function

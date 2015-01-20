@@ -1,152 +1,113 @@
 Attribute VB_Name = "Program"
 Option Explicit
-Public Const VersionNumber As String = "1.1.2"
+
+'Updater variables
+Public Const VersionNumber As String = "2.0.0"
 Public Const RepositoryName As String = "Open_Order_Report"
 
-Sub Main()
-    Dim ISN As String
-    Dim Cancel As Boolean
-    Dim ImportCheck As String
+'Variables set by FrmImport117
+Public Canceled As Boolean
+Public sBranch As String
+Public sSequence As String
+Public sISN As String
 
-    Application.ScreenUpdating = False
+Sub CreateExpedite()
+    'Import 117 report
+    FrmImport117.Show
 
-    UnhideSheets
+    If Canceled = True Then GoTo IMPORT_CANCELED
+
+    'If not canceled but no reports could be found exit the macro
+    If Sheets("117 DS").Range("A1").Value & _
+       Sheets("117 BO").Range("A1").Value = "" Then
+        Exit Sub
+    End If
+
+    'Import supplier contact master
+    ImportSupplierContacts Sheets("Supplier Master").Range("A1"), sBranch
+
+    'Import previous open order report
+    ImportPrevOOR
+
+    'Import gaps
+    ImportGaps Sheets("Gaps").Range("A1"), True, sBranch
+
+    'Create open order report
+    CreateOOR "BO"
+    CreateOOR "DS"
+
+    'Add formatting to open order report
+    FormatOOR "BO"
+    FormatOOR "DS"
+
+    'Save and email reports
+    ExportOOR
+
     Clean
-
-    'Import 117 Report
-    On Error GoTo ImportErr
-    ISN = InputBox("Inside Sales Number:", "Please enter the ISN#")
-    If ISN = "" Then Cancel = True
-
-    Import117byISN ReportType.BO, Sheets("117 BO").Range("A1"), ISN, Cancel
-    Import117byISN ReportType.DS, Sheets("117 DS").Range("A1"), ISN, Cancel
-    On Error GoTo 0
-
-    ImportCheck = Sheets("117 BO").Range("A1") & Sheets("117 DS").Range("A1")
-
-    If ImportCheck <> "" Then
-        ImportSupplierContacts
-        ImportSalesContacts
-        ImportOOR ISN
-
-        Format117 "117 DS"
-        Format117 "117 BO"
-        HideSheets
-
-        If Sheets("117 BO").Range("A1").Value <> "" Then
-            Sheets("117 BO").Select
-        Else
-            Sheets("117 DS").Select
-        End If
-    End If
-
-    Application.ScreenUpdating = True
-
-ImportErr:
+    MsgBox "Complete!"
     Exit Sub
+
+IMPORT_CANCELED:
+    Clean
+    Debug.Print Err.Description
+
 End Sub
 
-Sub SendMail()
-    Dim ISN As String
-    Dim EmailAddress As String
-    Dim FileName As String
-    Dim sPath As String
-    Dim i As Long
-    Dim MailSent As Boolean
+Sub CreateCustExpedite()
+    FrmImport117.Show
 
-    Application.ScreenUpdating = False
-    UnhideSheets
+    If Canceled = True Then GoTo IMPORT_CANCELED
 
-    Sheets("117 BO").Select
-
-    On Error Resume Next
-    ISN = Cells(2, FindColumn("IN")).Value
-    On Error GoTo 0
-
-    FileName = Format(Date, "yyyy-mm-dd") & " OOR.xlsx"
-
-    If ISN = "" Then
-        Sheets("117 DS").Select
-        ISN = Cells(2, FindColumn("IN")).Value
+    'If not canceled but no reports could be found exit the macro
+    If Sheets("117 DS").Range("A1").Value & _
+       Sheets("117 BO").Range("A1").Value = "" Then
+        Exit Sub
     End If
 
-    Sheets("Sales Contacts").Select
-    For i = 2 To ActiveSheet.UsedRange.Rows.Count
-        If Cells(i, 1).Value = ISN Then
-            EmailAddress = Cells(i, 2).Value
-            Exit For
-        End If
-    Next
+    'Import supplier contact master
+    ImportSupplierContacts Sheets("Supplier Master").Range("A1"), sBranch
 
-    If EmailAddress = "" Then
-        MsgBox Prompt:="Email for sales number " & ISN & " could not be found."
-    Else
-        sPath = "\\br3615gaps\gaps\3615 Open Order Report\ByInsideSalesNumber\" & ISN & "\" & FileName
-    End If
+    'Import previous open order report
+    ImportPrevOOR
 
-    Export117
+    CreateCustOOR "BO"
+    CreateCustOOR "DS"
 
-    If FileExists(sPath) = True Then
-        MailSent = Email(SendTo:=EmailAddress, _
-                         Subject:="Open Order Report", _
-                         Body:="Please click the link or open the attachment to view the status of your open POs" & "<br><br>" & """" & sPath & """", _
-                         Attachment:=sPath)
-        If MailSent = True Then
-            MsgBox "Email to " & EmailAddress & ". was sent successfully."
-        End If
-    End If
+    FormatCustOOR "BO"
+    FormatCustOOR "DS"
+    
+    'Save and email
+    ExportCustOOR
+    
+    Clean
+    MsgBox "Complete!"
+    Exit Sub
 
-
-    HideSheets
-    Application.ScreenUpdating = True
+IMPORT_CANCELED:
+    Clean
+    Debug.Print Err.Description
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Proc : Clean
+' Date : 10/20/2014
+' Desc : Remove all data from the macro workbook
+'---------------------------------------------------------------------------------------
 Sub Clean()
-    Dim s As Variant
-    Dim PrevDispAlert As Boolean
+    Dim s As Worksheet
 
-    PrevDispAlert = Application.DisplayAlerts
-    Application.DisplayAlerts = False
-
-    UnhideSheets
+    ThisWorkbook.Activate
     For Each s In ThisWorkbook.Sheets
         If s.Name <> "Macro" Then
+            s.Select
+            s.AutoFilterMode = False
+            s.Columns.Hidden = False
+            s.Rows.Hidden = False
             s.Cells.Delete
-        End If
-        If s.Name = "Previous 117 DS" Or s.Name = "Previous 117 BO" Then
-            s.Delete
+            s.Range("A1").Select
         End If
     Next
-    
-    Sheets.Add After:=Sheets(Sheets.Count)
-    ActiveSheet.Name = "Previous 117 DS"
-    Sheets.Add After:=Sheets(Sheets.Count)
-    ActiveSheet.Name = "Previous 117 BO"
-    
-    HideSheets
-    Application.DisplayAlerts = PrevDispAlert
-End Sub
 
-Sub HideSheets()
-    Dim s As Variant
-
-    For Each s In ThisWorkbook.Sheets
-        If s.Name <> "Macro" And s.Name <> "117 BO" And s.Name <> "117 DS" Then
-            If s.Visible = True Then
-                s.Visible = False
-            End If
-        End If
-    Next
-End Sub
-
-Sub UnhideSheets()
-    Dim s As Variant
-
-    For Each s In ThisWorkbook.Sheets
-        If s.Name <> "Macro" And s.Name <> "117 BO" And s.Name <> "117 DS" Then
-            If s.Visible = False Then
-                s.Visible = True
-            End If
-        End If
-    Next
+    Sheets("Macro").Select
+    Range("C7").Select
 End Sub
