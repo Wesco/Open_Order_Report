@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Open Order Report"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "2.0.1"
 #define MyAppPublisher "Wesco Distribution, Inc."
 #define MyAppURL "http://www.github.com/wesco"
 #define MyAppExeName "Open Order Report.xlsm"

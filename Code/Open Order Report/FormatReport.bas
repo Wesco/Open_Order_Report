@@ -36,6 +36,10 @@ Sub FormatOOR(RepType As String)
         Else
             Range(EstDelCol & i).Interior.Color = RGB(230, 0, 0)
         End If
+        
+        If CDate(Range(EstDelCol & i).Value) < Now Then
+            Range(EstDelCol & i).Interior.Color = RGB(230, 0, 0)
+        End If
     Next
 End Sub
 
