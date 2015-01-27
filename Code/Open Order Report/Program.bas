@@ -2,7 +2,7 @@ Attribute VB_Name = "Program"
 Option Explicit
 
 'Updater variables
-Public Const VersionNumber As String = "2.0.4"
+Public Const VersionNumber As String = "2.0.5"
 Public Const RepositoryName As String = "Open_Order_Report"
 
 'Variables set by FrmImport117
@@ -25,6 +25,7 @@ Sub CreateExpedite()
         Exit Sub
     End If
 
+    On Error GoTo MAIN_ERR
     'Import supplier contact master
     ImportSupplierContacts Sheets("Supplier Master").Range("A1"), sBranch
 
@@ -35,7 +36,6 @@ Sub CreateExpedite()
     ImportGaps Sheets("Gaps").Range("A1"), True, sBranch
 
     'Create open order report
-    On Error GoTo OOR_ERR
     CreateOOR "BO"
     CreateOOR "DS"
     On Error GoTo 0
@@ -59,7 +59,7 @@ IMPORT_CANCELED:
     Application.ScreenUpdating = True
     Exit Sub
 
-OOR_ERR:
+MAIN_ERR:
     MsgBox Err.Description, vbOKOnly, Err.Source
     Clean
     Application.ScreenUpdating = True
