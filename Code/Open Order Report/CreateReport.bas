@@ -46,7 +46,7 @@ Sub CreateOOR(RepType As String)
 
     'Verify columns
     TotalCols = Columns(Columns.Count).End(xlToLeft).Column
-    If TotalCols > UBound(RepCols) - 1 Then Err.Raise 50001, "CreateOOR", "117 report has changed"
+    If TotalCols > UBound(RepCols) + 1 Then Err.Raise 50001, "CreateOOR", "117 report has changed"
     
     For i = 1 To TotalCols
         If Cells(1, i).Value <> RepCols(i - 1) Then

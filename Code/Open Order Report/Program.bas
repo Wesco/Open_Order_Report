@@ -2,7 +2,7 @@ Attribute VB_Name = "Program"
 Option Explicit
 
 'Updater variables
-Public Const VersionNumber As String = "2.0.3"
+Public Const VersionNumber As String = "2.0.4"
 Public Const RepositoryName As String = "Open_Order_Report"
 
 'Variables set by FrmImport117
@@ -16,6 +16,8 @@ Sub CreateExpedite()
     FrmImport117.Show
 
     If Canceled = True Then GoTo IMPORT_CANCELED
+
+    Application.ScreenUpdating = False
 
     'If not canceled but no reports could be found exit the macro
     If Sheets("117 DS").Range("A1").Value & _
@@ -46,17 +48,21 @@ Sub CreateExpedite()
     ExportOOR
 
     Clean
+    Application.ScreenUpdating = True
+
     MsgBox "Complete!"
     Exit Sub
 
 IMPORT_CANCELED:
     Clean
     Debug.Print Err.Description
+    Application.ScreenUpdating = True
     Exit Sub
-    
+
 OOR_ERR:
     MsgBox Err.Description, vbOKOnly, Err.Source
     Clean
+    Application.ScreenUpdating = True
     Exit Sub
 End Sub
 
@@ -82,10 +88,10 @@ Sub CreateCustExpedite()
 
     FormatCustOOR "BO"
     FormatCustOOR "DS"
-    
+
     'Save and email
     ExportCustOOR
-    
+
     Clean
     MsgBox "Complete!"
     Exit Sub
