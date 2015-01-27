@@ -103,46 +103,6 @@ Sub FilterSheet(sFilter As String, ColNum As Integer, Match As Boolean)
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Proc : ImportModule
-' Date : 4/4/2013
-' Desc : Imports a code module into VBProject
-'---------------------------------------------------------------------------------------
-Sub ImportModule()
-    Dim comp As Variant
-    Dim codeFolder As String
-    Dim FileName As String
-    Dim WkbkPath As String
-
-    'Adds a reference to Microsoft Visual Basic for Applications Extensibility 5.3
-    AddReference "{0002E157-0000-0000-C000-000000000046}", 5, 3
-
-    'Gets the path to this workbook
-    WkbkPath = Left$(ThisWorkbook.fullName, InStr(1, ThisWorkbook.fullName, ThisWorkbook.Name, vbTextCompare) - 1)
-
-    'Gets the path to this workbooks code
-    codeFolder = WkbkPath & "Code\" & Left(ThisWorkbook.Name, Len(ThisWorkbook.Name) - 5) & "\"
-
-    For Each comp In ThisWorkbook.VBProject.VBComponents
-        If comp.Name <> "All_Helper_Functions" Then
-            Select Case comp.Type
-                Case 1
-                    FileName = codeFolder & comp.Name & ".bas"
-                    ThisWorkbook.VBProject.VBComponents.Remove comp
-                    ThisWorkbook.VBProject.VBComponents.Import FileName
-                Case 2
-                    FileName = codeFolder & comp.Name & ".cls"
-                    ThisWorkbook.VBProject.VBComponents.Remove comp
-                    ThisWorkbook.VBProject.VBComponents.Import FileName
-                Case 3
-                    FileName = codeFolder & comp.Name & ".frm"
-                    ThisWorkbook.VBProject.VBComponents.Remove comp
-                    ThisWorkbook.VBProject.VBComponents.Import FileName
-            End Select
-        End If
-    Next
-End Sub
-
-'---------------------------------------------------------------------------------------
 ' Proc : ReportTypeText
 ' Date : 4/10/2013
 ' Desc : Returns the report type as a string

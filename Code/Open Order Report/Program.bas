@@ -2,7 +2,7 @@ Attribute VB_Name = "Program"
 Option Explicit
 
 'Updater variables
-Public Const VersionNumber As String = "2.0.6"
+Public Const VersionNumber As String = "2.0.7"
 Public Const RepositoryName As String = "Open_Order_Report"
 
 'Variables set by FrmImport117
