@@ -2,7 +2,7 @@ Attribute VB_Name = "Program"
 Option Explicit
 
 'Updater variables
-Public Const VersionNumber As String = "2.0.2"
+Public Const VersionNumber As String = "2.0.3"
 Public Const RepositoryName As String = "Open_Order_Report"
 
 'Variables set by FrmImport117
@@ -33,8 +33,10 @@ Sub CreateExpedite()
     ImportGaps Sheets("Gaps").Range("A1"), True, sBranch
 
     'Create open order report
+    On Error GoTo OOR_ERR
     CreateOOR "BO"
     CreateOOR "DS"
+    On Error GoTo 0
 
     'Add formatting to open order report
     FormatOOR "BO"
@@ -50,7 +52,12 @@ Sub CreateExpedite()
 IMPORT_CANCELED:
     Clean
     Debug.Print Err.Description
-
+    Exit Sub
+    
+OOR_ERR:
+    MsgBox Err.Description, vbOKOnly, Err.Source
+    Clean
+    Exit Sub
 End Sub
 
 Sub CreateCustExpedite()
