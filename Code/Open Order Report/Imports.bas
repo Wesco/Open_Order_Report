@@ -25,7 +25,7 @@ Sub ImportPrevOOR()
                 ImportFile FilePath, FileName, Sheets("Prev 117 BO").Range("A1")
                 Sheets("Prev 117 BO").Select
                 For j = 0 To UBound(Colorder)
-                    FindColumn Colorder(i)
+                    FindColumn Colorder(j)
                 Next
                 Exit For
             End If
@@ -41,7 +41,7 @@ Sub ImportPrevOOR()
                 ImportFile FilePath, FileName, Sheets("Prev 117 DS").Range("A1")
                 Sheets("Prev 117 DS").Select
                 For j = 0 To UBound(Colorder)
-                    FindColumn Colorder(i)
+                    FindColumn Colorder(j)
                 Next
                 Exit For
             End If
