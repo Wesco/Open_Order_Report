@@ -26,7 +26,10 @@ Sub FormatOOR(RepType As String)
     For i = 2 To TotalRows
         If Trim(Range(CustDelCol & i).Value) <> "" And _
            Range(EstDelCol & i).Value <> "" Then
+           
+            On Error GoTo CDATE_ERR
             DateDiff = CDate(Trim(Range(CustDelCol & i).Value)) - CDate(Range(EstDelCol & i).Value)
+            On Error GoTo 0
 
             If DateDiff <= 0 Then
                 Range(EstDelCol & i).Interior.Color = RGB(230, 0, 0)
@@ -41,6 +44,11 @@ Sub FormatOOR(RepType As String)
             Range(EstDelCol & i).Interior.Color = RGB(230, 0, 0)
         End If
     Next
+    Exit Sub
+    
+CDATE_ERR:
+    DateDiff = 0
+    Resume Next
 End Sub
 
 Sub FormatCustOOR(RepType As String)
